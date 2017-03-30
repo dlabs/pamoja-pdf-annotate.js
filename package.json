@@ -6,6 +6,7 @@
   "scripts": {
     "test": "karma start --single-run",
     "start": "./scripts/web",
+    "dev": "./scripts/dev",
     "build-min": "MINIFY=1 webpack",
     "build": "webpack",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"

@@ -48,7 +48,7 @@ See more [examples](https://github.com/instructure/pdf-annotate.js/blob/master/w
 
 ```bash
 # clone the repo
-$ git clone https://github.com/instructure/pdf-annotate.js.git
+$ git clone git@github.com:dlabs/pamoja-pdf-annotate.js.git
 $ cd pdf-annotate.js
 
 # intall dependencies
@@ -57,6 +57,14 @@ $ npm install
 # start example server
 $ npm start
 $ open http://127.0.0.1:8080
+
+# start Development sync with pamoja-platform
+$ npm run dev "relative/path/to/pamoja-platform"
+open platform on http://localhost:8080
+changes in pdf-annotate.js should be automatically injected into pamoja-platform/build/js folder. Also browser-sync on Platform should hot-reload the app with new lib.
+
+# prepare version
+Once changes are ready to be used, merge them to master (via PR) and tag that commit with version. Then, we need to change dependency version in Platform's bower.json. Example: "pdf-annotate-js": "git@github.com:dlabs/pamoja-pdf-annotate.js.git#tag" and run bower install to load new lib.
 
 # run tests
 $ npm test

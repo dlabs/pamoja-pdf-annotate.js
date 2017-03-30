@@ -4,8 +4,8 @@ import render from './render';
 import UI from './UI';
 import initColorPicker from '../shared/initColorPicker';
 
-
-var PDFJS = require('../shared/pdf_viewer');
+// expose global PDFJS viewer
+const PDFJS = require('../shared/pdf_viewer');
 
 export default {
 
