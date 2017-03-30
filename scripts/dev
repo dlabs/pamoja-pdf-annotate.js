@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -gt 0 ]; then
+   MINIFY=1 PLATFORM=$1 webpack --config ./webpack.dev.js --watch
+   echo "Watching ..."
+else
+   printf "You need to specify relative path to Platform folder, so library can be injected into build folder.\nExample: npm run dev ../pamoja-platform\n"
+   exit 0;
+fi
+
+
