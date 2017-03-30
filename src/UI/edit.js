@@ -256,8 +256,8 @@ function handleDocumentMouseup(e) {
 
   function calcDelta(x, y) {
     return {
-      deltaX: OVERLAY_BORDER_SIZE + scaleDown(svg, {x: $(overlay).position().left }).x - x,
-      deltaY: OVERLAY_BORDER_SIZE + scaleDown(svg, {y: $(overlay).position().top }).y - y
+      deltaX: OVERLAY_BORDER_SIZE + scaleDown(svg, {x: overlay.offsetLeft }).x - x,
+      deltaY: OVERLAY_BORDER_SIZE + scaleDown(svg, {y: overlay.offsetTop }).y - y
     };
   }
 
