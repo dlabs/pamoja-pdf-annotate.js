@@ -101,6 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	// expose global PDFJS viewer
 	var PDFJS = __webpack_require__(36);
 	
 	exports.default = {

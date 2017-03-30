@@ -63,8 +63,15 @@ $ npm run dev "relative/path/to/pamoja-platform"
 open platform on http://localhost:8080
 changes in pdf-annotate.js should be automatically injected into pamoja-platform/build/js folder. Also browser-sync on Platform should hot-reload the app with new lib.
 
-# prepare version
-Once changes are ready to be used, merge them to master (via PR) and tag that commit with version. Then, we need to change dependency version in Platform's bower.json. Example: "pdf-annotate-js": "git@github.com:dlabs/pamoja-pdf-annotate.js.git#tag" and run bower install to load new lib.
+# Deploy version
+Once changes are ready to be used run following command:
+$ npm run build & npm run build-min
+push feature branch to remote repository and create a Pull request
+merge it to master branch (via PR).
+tag the new master branch with new version
+
+In order to use that version on Platform, we need to change dependency version in Platform's bower.json. 
+Example: "pdf-annotate-js": "git@github.com:dlabs/pamoja-pdf-annotate.js.git#tag" and run bower install to load new lib.
 
 # run tests
 $ npm test
