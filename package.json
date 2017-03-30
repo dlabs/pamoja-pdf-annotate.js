@@ -6,7 +6,8 @@
   "scripts": {
     "test": "karma start --single-run",
     "start": "./scripts/web",
-    "build": "MINIFY=1 webpack",
+    "build-min": "MINIFY=1 webpack",
+    "build": "webpack",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "files": [
@@ -45,7 +46,7 @@
     "lolex": "^1.4.0",
     "mocha": "^2.4.5",
     "object-assign": "^4.0.1",
-    "pdfjs-dist": "1.4.162",
+    "pdfjs-dist": "1.4.20",
     "simulant": "^0.2.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",

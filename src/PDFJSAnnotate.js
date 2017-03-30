@@ -2,8 +2,15 @@ import StoreAdapter from './adapter/StoreAdapter';
 import LocalStoreAdapter from './adapter/LocalStoreAdapter';
 import render from './render';
 import UI from './UI';
+import initColorPicker from '../shared/initColorPicker';
+
+
+var PDFJS = require('../shared/pdf_viewer');
 
 export default {
+
+  initColorPicker,
+
   /**
    * Abstract class that needs to be defined so PDFJSAnnotate
    * knows how to communicate with your server.

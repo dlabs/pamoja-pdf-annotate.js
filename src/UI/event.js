@@ -20,12 +20,12 @@ document.addEventListener('click', function handleDocumentClick(e) {
 
   // Emit annotation:blur if clickNode is no longer clicked
   if (clickNode && clickNode !== target) {
-    emitter.emit('annotation:blur', clickNode);
+    emitter.emit('annotation:blur', clickNode, e);
   }
 
   // Emit annotation:click if target was clicked
   if (target) {
-    emitter.emit('annotation:click', target);
+    emitter.emit('annotation:click', target, e);
   }
 
   clickNode = target;

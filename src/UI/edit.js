@@ -18,6 +18,7 @@ import {
 } from './utils';
 
 let _enabled = false;
+let _canEdit = true;
 let isDragging = false, overlay;
 let dragOffsetX, dragOffsetY, dragStartX, dragStartY;
 const OVERLAY_BORDER_SIZE = 3;
@@ -28,6 +29,22 @@ const OVERLAY_BORDER_SIZE = 3;
  * @param {Element} target The annotation element to apply overlay for
  */
 function createEditOverlay(target) {
+
+  if(!target || !target.parentNode) {
+    return;
+  }
+
+  // check if we are clicking on same Annotation, and if yes, exit early
+  if(overlay) {
+
+    var overlayId = overlay.getAttribute('data-target-id');
+    var targetId = target.getAttribute('data-pdf-annotate-id');
+
+    if (overlayId === targetId) {
+      return;
+    }
+  }
+
   destroyEditOverlay();
 
   overlay = document.createElement('div');
@@ -49,54 +66,59 @@ function createEditOverlay(target) {
   overlay.style.border = `${OVERLAY_BORDER_SIZE}px solid ${BORDER_COLOR}`;
   overlay.style.borderRadius = `${OVERLAY_BORDER_SIZE}px`;
 
-  anchor.innerHTML = '×';
-  anchor.setAttribute('href', 'javascript://');
-  anchor.style.background = '#fff';
-  anchor.style.borderRadius = '20px';
-  anchor.style.border = '1px solid #bbb';
-  anchor.style.color = '#bbb';
-  anchor.style.fontSize = '16px';
-  anchor.style.padding = '2px';
-  anchor.style.textAlign = 'center';
-  anchor.style.textDecoration = 'none';
-  anchor.style.position = 'absolute';
-  anchor.style.top = '-13px';
-  anchor.style.right = '-13px';
-  anchor.style.width = '25px';
-  anchor.style.height = '25px';
-  
-  overlay.appendChild(anchor);
-  parentNode.appendChild(overlay);
-  document.addEventListener('click', handleDocumentClick);
-  document.addEventListener('keyup', handleDocumentKeyup);
-  document.addEventListener('mousedown', handleDocumentMousedown);
-  anchor.addEventListener('click', deleteAnnotation);
-  anchor.addEventListener('mouseover', () => {
-    anchor.style.color = '#35A4DC';
-    anchor.style.borderColor = '#999';
-    anchor.style.boxShadow = '0 1px 1px #ccc';
-  });
-  anchor.addEventListener('mouseout', () => {
+  if (_canEdit) {
+    anchor.innerHTML = '×';
+    anchor.setAttribute('href', 'javascript://');
+    anchor.style.background = '#fff';
+    anchor.style.borderRadius = '20px';
+    anchor.style.border = '1px solid #bbb';
     anchor.style.color = '#bbb';
-    anchor.style.borderColor = '#bbb';
-    anchor.style.boxShadow = '';
-  });
-  overlay.addEventListener('mouseover', () => {
-    if (!isDragging) { anchor.style.display = ''; }
-  });
-  overlay.addEventListener('mouseout', () => {
-    anchor.style.display = 'none';
-  });
+    anchor.style.fontSize = '16px';
+    anchor.style.padding = '2px';
+    anchor.style.textAlign = 'center';
+    anchor.style.textDecoration = 'none';
+    anchor.style.position = 'absolute';
+    anchor.style.top = '-13px';
+    anchor.style.right = '-13px';
+    anchor.style.width = '25px';
+    anchor.style.height = '25px';
+    
+    overlay.appendChild(anchor);
+    
+    document.addEventListener('click', handleDocumentClick);
+    document.addEventListener('keyup', handleDocumentKeyup);
+    document.addEventListener('mousedown', handleDocumentMousedown);
+    anchor.addEventListener('click', deleteAnnotation);
+    anchor.addEventListener('mouseover', () => {
+      anchor.style.color = '#35A4DC';
+      anchor.style.borderColor = '#999';
+      anchor.style.boxShadow = '0 1px 1px #ccc';
+    });
+    anchor.addEventListener('mouseout', () => {
+      anchor.style.color = '#bbb';
+      anchor.style.borderColor = '#bbb';
+      anchor.style.boxShadow = '';
+    });
+    overlay.addEventListener('mouseover', () => {
+      if (!isDragging) { anchor.style.display = ''; }
+    });
+    overlay.addEventListener('mouseout', () => {
+      anchor.style.display = 'none';
+    });
+  }
+
+  parentNode.appendChild(overlay);
 }
 
 /**
  * Destroy the edit overlay if it exists.
  */
 function destroyEditOverlay() {
-  if (overlay) {
+
+  if (overlay && overlay.parentNode) {
     overlay.parentNode.removeChild(overlay);
-    overlay = null;
   }
+  overlay = null;
 
   document.removeEventListener('click', handleDocumentClick);
   document.removeEventListener('keyup', handleDocumentKeyup);
@@ -234,13 +256,19 @@ function handleDocumentMouseup(e) {
 
   function calcDelta(x, y) {
     return {
-      deltaX: OVERLAY_BORDER_SIZE + scaleDown(svg, {x: overlay.offsetLeft}).x - x,
-      deltaY: OVERLAY_BORDER_SIZE + scaleDown(svg, {y: overlay.offsetTop}).y - y
+      deltaX: OVERLAY_BORDER_SIZE + scaleDown(svg, {x: $(overlay).position().left }).x - x,
+      deltaY: OVERLAY_BORDER_SIZE + scaleDown(svg, {y: $(overlay).position().top }).y - y
     };
   }
 
   PDFJSAnnotate.getStoreAdapter().getAnnotation(documentId, annotationId).then((annotation) => {
-    if (['area', 'highlight', 'point', 'textbox'].indexOf(type) > -1) {
+    
+    // exit early if those are not present (happens with Spammy clicking)
+    if(!target || !svg || !target[0] || !target[0].parentNode) {
+      return;
+    }
+
+    if (['area', 'highlight', 'point', 'textbox', 'strikeout'].includes(type)) {
       let { deltaX, deltaY } = getDelta('x', 'y');
       [...target].forEach((t, i) => {
         if (deltaY !== 0) {
@@ -277,6 +305,10 @@ function handleDocumentMouseup(e) {
             annotation.x = modelX;
           }
         }
+
+        if(deltaX !== 0 || deltaY !== 0) {
+          PDFJSAnnotate.getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
+        }
       });
     // } else if (type === 'strikeout') {
     //   let { deltaX, deltaY } = getDelta('x1', 'y1');
@@ -310,9 +342,11 @@ function handleDocumentMouseup(e) {
 
       target[0].parentNode.removeChild(target[0]);
       appendChild(svg, annotation);
-    }
 
-    PDFJSAnnotate.getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
+      if(deltaX !== 0 || deltaY !== 0) {
+        PDFJSAnnotate.getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
+      }
+    }
   });
 
   setTimeout(() => {
@@ -334,6 +368,14 @@ function handleDocumentMouseup(e) {
  */
 function handleAnnotationClick(target) {
   createEditOverlay(target);
+}
+
+/**
+ * Added to disable movement and deletion of annotations while still
+ * allowing selection
+ */
+export function setCanEdit(value) {
+  _canEdit = value;
 }
 
 /**

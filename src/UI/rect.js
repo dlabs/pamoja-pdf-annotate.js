@@ -90,6 +90,12 @@ function handleDocumentMousemove(e) {
  */
 function handleDocumentMouseup(e) {
   let rects;
+
+  // TODO: Pamoja: temp fix (mrbrdo) - fix problem if creating highlight annotation and then clicking arrow icon (would duplicate annotation because of this function call)
+  if (!findSVGAtPoint(e.clientX, e.clientY)) {
+    return;
+  }
+    
   if (_type !== 'area' && (rects = getSelectionRects())) {
     let svg = findSVGAtPoint(rects[0].left, rects[0].top);
     saveRect(_type, [...rects].map((r) => {

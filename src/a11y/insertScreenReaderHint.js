@@ -4,7 +4,7 @@ import insertElementWithinElement from './insertElementWithinElement';
 import renderScreenReaderComments from './renderScreenReaderComments';
 
 // Annotation types that support comments
-const COMMENT_TYPES = ['highlight', 'point', 'area'];
+const COMMENT_TYPES = ['highlight', 'point', 'area', 'drawing', 'strikeout'];
 
 /**
  * Insert a hint into the DOM for screen readers for a specific annotation.

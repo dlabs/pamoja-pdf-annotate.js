@@ -64,7 +64,7 @@ export default class LocalStoreAdapter extends StoreAdapter {
       getComments(documentId, annotationId) {
         return new Promise((resolve, reject) => {
           resolve(getAnnotations(documentId).filter((i) => {
-            return i.class === 'Comment' && i.annotation === annotationId;
+            return i.class === 'Comment' && parseInt(i.annotation) === parseInt(annotationId);
           }));
         });
       },
