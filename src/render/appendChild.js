@@ -52,8 +52,9 @@ function transform(node, viewport) {
   let trans = getTranslation(viewport);
 
   // Let SVG natively transform the element
-  node.setAttribute('transform', `scale(${viewport.scale}) rotate(${viewport.rotation}) translate(${trans.x}, ${trans.y})`);
-  
+  //node.setAttribute('transform', `scale(${viewport.scale}) rotate(${viewport.rotation}) translate(${trans.x}, ${trans.y})`);
+  node.setAttribute('transform', `scale(${viewport.scale})`);
+
   // Manually adjust x/y for nested SVG nodes
   if (!isFirefox && node.nodeName.toLowerCase() === 'svg') {
     node.setAttribute('x', parseInt(node.getAttribute('x'), 10) * viewport.scale);
